@@ -1,4 +1,4 @@
-# Setup GKE + Docker registry
+# Setup using gcloud
 
 ## Setup your GCP project
 
@@ -19,6 +19,8 @@
   Your active configuration is: [test-gke]
   test-gke-419405
   ```
+
+---
 
 ## Create a GKE cluster
 
@@ -64,7 +66,7 @@
 
 * Via the [Google cloud console](https://console.cloud.google.com/kubernetes/list/overview)
 
-  ![](Screenshot from 2024-04-05 07-14-55.png)
+  ![](docs/Screenshot from 2024-04-05 07-14-55.png)
 
 ## Connect to the Kubernetes cluster
 
@@ -119,6 +121,8 @@
   kubeconfig entry generated for test-gke.
   ```
 
+---
+
 ## Set up a Docker registry
 
 * Go to [your dashboard](https://console.cloud.google.com/home/dashboard) and retrieve the project ID and project number, displayed on the project Dashboard Project info card:
@@ -163,24 +167,41 @@
   version: 1
   ```
 
-## Push an image to the registry
+## Authenticate Docker to the artifact registry
 
-* Authenticate Docker to the artifact registry
+``` bash
+$ gcloud auth configure-docker $REGION-docker.pkg.dev
+Adding credentials for: us-west1-docker.pkg.dev
+After update, the following will be written to your Docker config file located at [/home/aurelie/.docker/config.json]:
+ {
+  "credHelpers": {
+    "us-west1-docker.pkg.dev": "gcloud"
+  }
+}
+
+Do you want to continue (Y/n)?  
+
+Docker configuration file updated.
+```
+
+## List images in GCP
+
+* List artifacts [via the Google console](https://console.cloud.google.com/artifacts)
+
+* Via the Google shell:
 
   ``` bash
-  $ gcloud auth configure-docker $REGION-docker.pkg.dev
-  Adding credentials for: us-west1-docker.pkg.dev
-  After update, the following will be written to your Docker config file located at [/home/aurelie/.docker/config.json]:
-   {
-    "credHelpers": {
-      "us-west1-docker.pkg.dev": "gcloud"
-    }
-  }
+  # us-west1-docker.pkg.dev/test-gke-419405/test-gke-repo
+  $ DOCKER_REPOSITORY=${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}
 
-  Do you want to continue (Y/n)?  
+  $ gcloud artifacts docker images list $DOCKER_REPOSITORY --format="flattened(package)"
+  Listing items under project test-gke-419405, location us-west1, repository test-gke-repo.
 
-  Docker configuration file updated.
+  ---
+  image: us-west1-docker.pkg.dev/test-gke-419405/test-gke-repo/flask
   ```
+
+## Push an image to the registry
 
 * Build the image
 
@@ -195,22 +216,7 @@
   $ docker push !$
   ```
 
-## List images in GCP
-
-* List artifacts [via the Google console](https://console.cloud.google.com/artifacts)
-
-* Via the Google shell:
-
-  ``` bash
-  # us-west1-docker.pkg.dev/test-gke-419405/test-gke-repo
-  $ gcloud artifacts docker images list \
-      ${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME} \
-      --format="flattened(package)"
-  Listing items under project test-gke-419405, location us-west1, repository test-gke-repo.
-
-  ---
-  image: us-west1-docker.pkg.dev/test-gke-419405/test-gke-repo/flask
-  ```
+---
 
 ## Create a K8s deployment
 

@@ -25,4 +25,6 @@ Base: [gcp-app-engine-flask](https://github.com/a-mt/gcp-app-engine-flask)
 
 ## Setup GKE + Docker registry
 
-* [INFRA_GOOGLE_CONSOLE](./INFRA_GOOGLE_CONSOLE.md)
+* Option 1: [Gcloud](./SETUP_GCLOUD.md)
+
+* Option 2: [Terraform](./SETUP_TERRAFORM.md)
