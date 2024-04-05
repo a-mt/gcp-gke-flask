@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker.base.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src:/srv/www:delegated
+    healthcheck:
+      disable: true

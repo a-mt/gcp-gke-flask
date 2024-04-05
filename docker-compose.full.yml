@@ -1,0 +1,14 @@
+# docker-compose -f docker-compose.full.yml build
+version: '3'
+
+services:
+  web:
+    image: gcp-gke-flask-web-full
+    build:
+      context: .
+      dockerfile: docker.full.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    healthcheck:
+      disable: true
